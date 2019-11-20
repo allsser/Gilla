@@ -1,8 +1,12 @@
-package com.ccj.gilla;
+package com.ccj.gilla.Adapter;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+
+import com.ccj.gilla.TabFragment.TabFragment1;
+import com.ccj.gilla.TabFragment.TabFragment2;
+import com.ccj.gilla.TabFragment.TabFragment3;
 
 // 탭이 변할때마다 position을 받아 Fragment를 전환해  주는 역할을 한다.
 
