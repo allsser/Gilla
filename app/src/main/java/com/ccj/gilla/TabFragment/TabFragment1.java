@@ -1,6 +1,9 @@
 package com.ccj.gilla.TabFragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +33,7 @@ public class TabFragment1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // onCreateView는 onCreate 후에 화면을 구성할때 호출되는 부분이다.
         View view = inflater.inflate(R.layout.tab_fragment_1, container, false);
+
 
         textView = (TextView)view.findViewById(R.id.result);
         textView.setText("이거 되냐?");

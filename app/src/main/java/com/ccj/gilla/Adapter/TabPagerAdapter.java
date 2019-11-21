@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.ccj.gilla.TabFragment.TabFragment1;
 import com.ccj.gilla.TabFragment.TabFragment2;
 import com.ccj.gilla.TabFragment.TabFragment3;
+import com.ccj.gilla.TabFragment.TabFragment4;
 
 // 탭이 변할때마다 position을 받아 Fragment를 전환해  주는 역할을 한다.
 
@@ -33,6 +34,9 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
             case 2:
                 TabFragment3 tabFragment3 = new TabFragment3();
                 return tabFragment3;
+            case 3:
+                TabFragment4 tabFragment4 = new TabFragment4();
+                return tabFragment4;
 
                 default:
                     return null;
