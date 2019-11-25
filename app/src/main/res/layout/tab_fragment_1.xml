@@ -5,17 +5,29 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
-
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/origin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="none" />
+        android:text="37.5728359,126.9746922" />
+
+    <EditText
+        android:id="@+id/destination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="37.5129907,127.1005382" />
+
+    <EditText
+        android:id="@+id/mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="transit" />
+
+    <EditText
+        android:id="@+id/departure_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="now" />
 
     <Button
         android:id="@+id/button"
@@ -24,8 +36,9 @@
         android:text="Button"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-
-
-
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

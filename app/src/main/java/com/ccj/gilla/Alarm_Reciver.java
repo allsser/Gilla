@@ -3,7 +3,8 @@ package com.ccj.gilla;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+
+import com.ccj.gilla.Service.RingtonePlayingService;
 
 public class Alarm_Reciver extends BroadcastReceiver {
 

@@ -22,25 +22,21 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="test2"
-                    android:scheme="bill" />
             </intent-filter>
-
         </activity>
 
 
         <receiver android:name=".Alarm_Reciver" />
 
         <service
-            android:name=".RingtonePlayingService"
+            android:name=".Service.RingtonePlayingService"
             android:enabled="true">
         </service>
-
+        <service
+            android:name=".Service.MapService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.ccj.gilla;
+package com.ccj.gilla.Service;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -10,6 +10,8 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.ccj.gilla.R;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
