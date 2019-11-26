@@ -7,18 +7,23 @@
     android:orientation="vertical"
     android:gravity="top">
 
-    <WebView
-        android:id="@+id/daum_webview"
+    <EditText
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4" />
+        android:layout_height="wrap_content"
+        android:text="test"
+        android:id="@+id/input01">
+    </EditText>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="button"
+        android:id="@+id/button">
+    </Button>
 
     <TextView
-        android:id="@+id/daum_result"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="Result" />
+        android:layout_height="wrap_content"
+        android:id="@+id/txtMsg">
+    </TextView>
 </LinearLayout>

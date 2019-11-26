@@ -3,8 +3,11 @@ package com.ccj.gilla.Service;
 import android.app.Service;
 import android.content.Intent;
 import android.net.http.HttpResponseCache;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
+import androidx.fragment.app.Fragment;
 
 import com.ccj.gilla.TabFragment.TabFragment1;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -17,23 +20,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
-
-import androidx.annotation.Nullable;
 
 public class MapService extends Service {
+
     private class MapRunnable implements Runnable {
         private String origin;
         private String destination;
-        private String mode;
-        private String departure_time;
-        private String key = "AIzaSyCd94bckaxJaYfyhKVRFn8nDqSFlgb01AY";
+        private String key = "AIzaSyCqO9nJRkU-WH0d8gGfmtBEz3pdqbPA-eY";
 
-        MapRunnable(String origin, String destination, String mode, String departure_time) {
+        MapRunnable(String origin, String destination) {
             this.origin = origin;
             this.destination = destination;
-            this.mode = mode;
-            this.departure_time = departure_time;
         }
 
         @Override
@@ -41,9 +38,11 @@ public class MapService extends Service {
             String url = "https://maps.googleapis.com/maps/api/directions/json?" +
                     "origin=" + origin +
                     "&destination=" + destination +
-                    "&mode=" + mode +
-                    "&departure_time=" + departure_time +
+                    "&mode=transit" +
+                    "&departure_time=now" +
+                    "&language=ko" +
                     "&key=" + key;
+            Log.i("url",url);
 
             try {
                 URL urlOb = new URL(url);
@@ -79,20 +78,33 @@ public class MapService extends Service {
                 String mins = (String)jsonObject3.get("text");
                 Log.i("test5", mins);
 
-                Intent i = new Intent(getApplicationContext(), TabFragment1.class);
+//                Intent i = new Intent(getApplicationContext(), TabFragment1.class);
+//
+//                i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//
+//                i.putExtra("resultData",mins);
+//                startActivity(i);
 
-                i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Fragment fragment = new Fragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("resultData", mins);
+                fragment.setArguments(bundle);
 
-                i.putExtra("resultData",mins);
-                startActivity(i);
+
+
+
+
 
             } catch (Exception e) {
                 Log.i("Error", e.toString());
             }
         }
+
     }
+
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -117,10 +129,8 @@ public class MapService extends Service {
         // Thread를 하나 생성해야 한다.
         String origin = intent.getExtras().getString("origin");
         String destination = intent.getExtras().getString("destination");
-        String mode = intent.getExtras().getString("mode");
-        String departure_time = intent.getExtras().getString("departure_time");
         // Thread를 만들기 위한 Runnable 객체부터 생성
-        MapRunnable runnable = new MapRunnable(origin, destination, mode, departure_time);
+        MapRunnable runnable = new MapRunnable(origin, destination);
         Thread t = new Thread(runnable);
         t.start();
 

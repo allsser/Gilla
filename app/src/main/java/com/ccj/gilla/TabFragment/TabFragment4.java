@@ -1,37 +1,44 @@
 package com.ccj.gilla.TabFragment;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.net.Uri;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import com.ccj.gilla.R;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class TabFragment4 extends Fragment {
 
-    private WebView daum_webView;
-    private TextView daum_result;
-    private Handler handler;
+    EditText input01;
+    TextView txtMsg;
+    int select = 0;
+    String lats[];
+    String lngs[];
+    public static String defaultUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=";
 
+    Handler handler = new Handler();
+    float Lat, Lng;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,42 +55,140 @@ public class TabFragment4 extends Fragment {
         // onCreateView는 onCreate 후에 화면을 구성할때 호출되는 부분이다.
         View view = inflater.inflate(R.layout.tab_fragment_4, container, false);
 
-        daum_result = (TextView) view.findViewById(R.id.daum_result);
-        // WebView 설정
-        daum_webView = (WebView) view.findViewById(R.id.daum_webview);
+        input01 = (EditText)view.findViewById(R.id.input01);
+        txtMsg = (TextView)view.findViewById(R.id.txtMsg);
 
-        // WebView 초기화
-        init_webView();
-        // 핸들러를 통한 JavaScript 이벤트 반응
-        handler = new Handler();
+        Button button = (Button)view.findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                String userStr = input01.getText().toString();
+                String urlStr = defaultUrl + userStr + "&key=AIzaSyCqO9nJRkU-WH0d8gGfmtBEz3pdqbPA-eY&language=ko";
+
+                ConnectThread thread = new ConnectThread(urlStr);
+                thread.start();
+            }
+        });
         return view;
     }
 
-    public void init_webView() {
+    class ConnectThread extends Thread {
+        String urlStr;
 
-        // JavaScript 허용
-        daum_webView.getSettings().setJavaScriptEnabled(true);
-        // JavaScript의 window.open 허용
-        daum_webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        // JavaScript이벤트에 대응할 함수를 정의 한 클래스를 붙여줌
-        daum_webView.addJavascriptInterface(new AndroidBridge(), "TestApp");
-        // web client 를 chrome 으로 설정
-        daum_webView.setWebChromeClient(new WebChromeClient());
-        // webview url load. php 파일 주소
-        daum_webView.loadUrl("http://192.168.25.60:80/daum_address.php");
-    }
+        public ConnectThread(String inStr) {
+            urlStr = inStr;
+        }
 
-    private class AndroidBridge {
-        @JavascriptInterface
-        public void setAddress(final String arg1, final String arg2, final String arg3) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    daum_result.setText(String.format("(%s) %s %s", arg1, arg2, arg3));
-                    // WebView를 초기화 하지않으면 재사용할 수 없음
-                    init_webView();
+        public void run() {
+            try {
+                final String output = request(urlStr);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        findLatLng(output);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        private String request(String urlStr) {
+            StringBuilder output = new StringBuilder();
+            try {
+                URL url = new URL(urlStr);
+                HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                if(conn != null){
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setRequestProperty("Accept-Charset", "URF-8");
+
+                    int resCode = conn.getResponseCode();
+
+                    Log.i("resCode", String.valueOf(resCode));
+                    if (resCode == HttpURLConnection.HTTP_OK) {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+
+                        String line = null;
+                        while (true) {
+                            line = reader.readLine();
+                            if (line == null) {
+                                break;
+                            }
+                            output.append(line + "\n");
+                        }
+
+                        reader.close();
+                        conn.disconnect();
+                    }
                 }
-            });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return output.toString();
         }
     }
+
+    private void findLatLng(String output) {
+        Log.i("output", output);
+        try {
+            JSONObject jsonObject = new JSONObject(output);
+            String status = jsonObject.getString("status");
+            String condition = status.trim();
+
+            if(condition.equals("OK")) {
+                JSONArray jsonResultArray = new JSONArray(jsonObject.getString("results"));
+                int jsonResultLength = jsonResultArray.length();
+
+                if(jsonResultLength > 5) {
+                    Toast.makeText(getActivity(), "검색된 결과 값이 너무 많습니다.", Toast.LENGTH_SHORT).show();
+                } else if(jsonResultLength > 1) {
+                    String addresses[] = new String[jsonResultLength];
+                    lats = new String[jsonResultLength];
+                    lngs = new String[jsonResultLength];
+
+                    for(int i=0; i<jsonResultLength; i++) {
+                        String address = jsonResultArray.getJSONObject(i).getString("formatted_address");
+
+                        JSONObject geoObject = new JSONObject(jsonResultArray.getJSONObject(i).getString("geometry"));
+                        JSONObject locObject = new JSONObject(geoObject.getString("location"));
+                        String lat = locObject.getString("lat");
+                        String lng = locObject.getString("lng");
+
+                        addresses[i] = address;
+                        lats[i] = lat;
+                        lngs[i] = lng;
+                    }
+
+                    AlertDialog.Builder ab = new AlertDialog.Builder(getActivity());
+                    ab.setTitle("아래에서 해당 주소를 선택하세요");
+                    ab.setSingleChoiceItems(addresses, select, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            select = i;
+                        }
+                    }).setPositiveButton("선택", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            txtMsg.setText("lat : " + lats[select] + "\n lng : " + lngs[select]);
+                        }
+                    }).setNegativeButton("취소", null);
+                    ab.show();
+                } else if(jsonResultLength == 1){
+                    JSONObject geoObject = new JSONObject(jsonResultArray.getJSONObject(0).getString("geometry"));
+                    JSONObject locObject = new JSONObject(geoObject.getString("location"));
+                    String lat = locObject.getString("lng");
+                    String lng = locObject.getString("lat");
+
+                    txtMsg.setText("lat : " + lat + "\n lng : " + lng);
+                }
+            } else {
+                Toast.makeText(getActivity(), "해당 조회 결과 값이 없습니다.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

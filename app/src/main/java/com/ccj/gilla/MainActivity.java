@@ -3,10 +3,20 @@ package com.ccj.gilla;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.ccj.gilla.Adapter.TabPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,10 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Initializing the TabLayout
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.addTab(tabLayout.newTab().setText("Tab One"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab Two"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab Three"));
-        tabLayout.addTab(tabLayout.newTab().setText("MAPTEST"));
+        tabLayout.addTab(tabLayout.newTab().setText("알람1"));
+        tabLayout.addTab(tabLayout.newTab().setText("지도"));
+        tabLayout.addTab(tabLayout.newTab().setText("알람2"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         // Initializing ViewPager
@@ -54,6 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
     }
+
 }
