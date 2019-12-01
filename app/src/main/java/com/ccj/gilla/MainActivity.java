@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText("알람1"));
         tabLayout.addTab(tabLayout.newTab().setText("지도"));
         tabLayout.addTab(tabLayout.newTab().setText("알람2"));
+        tabLayout.addTab(tabLayout.newTab().setText("음성인식"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         // Initializing ViewPager
